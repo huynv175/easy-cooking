@@ -10,4 +10,6 @@
 /git_toolbox_blame.xml
 /modules.xml
 /git_toolbox_prj.xml
-/vcs.xml
+.idea/
+*.iml
+.vcs.xml

@@ -4,38 +4,47 @@ import (
 	"easy-cooking/internal/models/dto"
 	"fmt"
 	"log"
+	"strings"
 
 	"github.com/spf13/viper"
 )
 
 var Config dto.AppConfig
 
-// LoadConfig tải cấu hình từ file
 func LoadConfig() {
-	viper.SetConfigName("env") // Tên file cấu hình, không cần phần mở rộng
-	viper.SetConfigType("yaml")
-	viper.AddConfigPath(".") // Thư mục hiện tại
+	viper.AutomaticEnv()
 
-	// Đọc file cấu hình
-	if err := viper.ReadInConfig(); err != nil {
-		log.Fatalf("Error reading config file: %v", err)
+	requiredEnvs := []string{
+		"DATABASE_HOST",
+		"DATABASE_PORT",
+		"DATABASE_USER",
+		"DATABASE_PASSWORD",
+		"DATABASE_NAME",
+		"SERVER_PORT",
+		"JWT_SECRET_KEY",
 	}
 
-	// Gán giá trị vào cấu hình ứng dụng
+	for _, env := range requiredEnvs {
+		if !viper.IsSet(env) {
+			log.Fatalf("Required environment variable %s is not set", env)
+		}
+	}
+
 	Config = dto.AppConfig{
 		DatabaseDSN: fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s sslmode=disable",
-			viper.GetString("database.host"),
-			viper.GetString("database.port"),
-			viper.GetString("database.user"),
-			viper.GetString("database.password"),
-			viper.GetString("database.name"),
+			strings.TrimSpace(strings.Trim(viper.GetString("DATABASE_HOST"), "\"")),
+			strings.TrimSpace(strings.Trim(viper.GetString("DATABASE_PORT"), "\"")),
+			strings.TrimSpace(strings.Trim(viper.GetString("DATABASE_USER"), "\"")),
+			strings.TrimSpace(strings.Trim(viper.GetString("DATABASE_PASSWORD"), "\"")),
+			strings.TrimSpace(strings.Trim(viper.GetString("DATABASE_NAME"), "\"")),
 		),
-		ServerPort: viper.GetString("server.port"),
+		ServerPort: viper.GetString("SERVER_PORT"),
 		JWTConfig: dto.JWTConfig{
-			SecretKey:        viper.GetString("jwt.secretKey"),
-			AccessExpiration: viper.GetDuration("jwt.accessExpiration"),
+			SecretKey:        viper.GetString("JWT_SECRET_KEY"),
+			AccessExpiration: viper.GetDuration("JWT_ACCESS_EXPIRATION"),
 		},
 	}
 
-	log.Println("Loaded config:", Config)
+	log.Printf("DatabaseDSN: %s\n", Config.DatabaseDSN)
+	log.Printf("ServerPort: %s\n", Config.ServerPort)
 }

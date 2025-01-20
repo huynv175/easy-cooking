@@ -92,12 +92,7 @@ type SearchRecipeResponse struct {
 }
 
 // SearchRecipeResponse
-func NewSearchRecipeResponse(
-	recipes []*do.Recipe,
-	total int64,
-	page int,
-	pageSize int,
-) SearchRecipeResponse {
+func NewSearchRecipeResponse(recipes []*do.Recipe, total int64, page int, pageSize int) SearchRecipeResponse {
 	totalPages := int(total) / pageSize
 	if int(total)%pageSize != 0 {
 		totalPages++

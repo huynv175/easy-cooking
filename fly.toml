@@ -16,9 +16,7 @@ DATABASE_HOST = "db.iqfkxvhukamejelfzrze.supabase.co"
 DATABASE_PORT = "5432"
 DATABASE_NAME = "postgres"
 DATABASE_USER = "postgres"
-DATABASE_PASSWORD = "175lelough#"
-JWT_SECRET_KEY = "secret"
-JWT_ACCESS_EXPIRATION = "24h"
+DATABASE_PASSWORD = "175lelough#" #dev
 
 [http_service]
 internal_port = 8080

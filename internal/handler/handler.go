@@ -1,7 +1,6 @@
 package handler
 
 import (
-	"easy-cooking/internal/models/dto"
 	"easy-cooking/internal/service"
 	"time"
 
@@ -13,9 +12,9 @@ type Handler struct {
 	recipeService service.RecipeService
 }
 
-func NewHandler(db *gorm.DB, jwtConfig dto.JWTConfig, timeout time.Duration) *Handler {
+func NewHandler(db *gorm.DB, timeout time.Duration) *Handler {
 	return &Handler{
 		DB:            db,
-		recipeService: service.NewRecipeService(db, jwtConfig, timeout),
+		recipeService: service.NewRecipeService(db, timeout),
 	}
 }

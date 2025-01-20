@@ -13,6 +13,7 @@ type recipeRepository struct {
 type RecipeRepository interface {
 	GetRecipes(ctx context.Context) ([]*do.Recipe, error)
 	SearchRecipes(ctx context.Context, criteria SearchCriteria) ([]*do.Recipe, int64, error)
+	GetRecipeByID(ctx context.Context, id int64) (do.Recipe, error)
 }
 
 var _ RecipeRepository = (*recipeRepository)(nil)
@@ -41,7 +42,10 @@ type SearchCriteria struct {
 
 func (r *recipeRepository) SearchRecipes(ctx context.Context, criteria SearchCriteria) ([]*do.Recipe, int64, error) {
 	query := r.db.Model(&do.Recipe{})
-
+	query = query.Preload("Ingredients").
+		Preload("Instructions", func(db *gorm.DB) *gorm.DB {
+			return db.Order("step_number ASC")
+		})
 	if criteria.Keyword != "" {
 		query = query.Where("title ILIKE ? OR description ILIKE ?",
 			"%"+criteria.Keyword+"%",
@@ -82,4 +86,17 @@ func (r *recipeRepository) SearchRecipes(ctx context.Context, criteria SearchCri
 	}
 
 	return recipes, total, nil
+}
+
+func (r *recipeRepository) GetRecipeByID(ctx context.Context, id int64) (do.Recipe, error) {
+	var recipe do.Recipe
+	query := r.db.Model(&do.Recipe{})
+	query = query.Preload("Ingredients").
+		Preload("Instructions", func(db *gorm.DB) *gorm.DB {
+			return db.Order("step_number ASC")
+		})
+	if err := query.Where("id = ?", id).First(&recipe).Error; err != nil {
+		return recipe, err
+	}
+	return recipe, nil
 }

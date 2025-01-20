@@ -11,19 +11,18 @@ import (
 type RecipeService interface {
 	GetRecipes(ctx context.Context) ([]*dto.RecipeResponse, error)
 	SearchRecipes(ctx context.Context, params dto.RecipeSearchRequest) (*dto.SearchRecipeResponse, error)
+	GetRecipeByID(ctx context.Context, id int64) (*dto.RecipeResponse, error)
 }
 
 type recipeService struct {
 	timeout          time.Duration
 	recipeRepository repository.RecipeRepository
-	jwtConfig        dto.JWTConfig
 }
 
-func NewRecipeService(db *gorm.DB, jwtConfig dto.JWTConfig, timeout time.Duration) *recipeService {
+func NewRecipeService(db *gorm.DB, timeout time.Duration) *recipeService {
 	return &recipeService{
 		timeout:          timeout,
 		recipeRepository: repository.NewRecipeRepository(db),
-		jwtConfig:        jwtConfig,
 	}
 }
 
@@ -80,4 +79,14 @@ func (s *recipeService) SearchRecipes(ctx context.Context, params dto.RecipeSear
 	)
 
 	return &searchResponse, nil
+}
+
+func (s *recipeService) GetRecipeByID(ctx context.Context, id int64) (*dto.RecipeResponse, error) {
+
+	recipe, err := s.recipeRepository.GetRecipeByID(ctx, id)
+	if err != nil {
+		return nil, err
+	}
+	resp := dto.ToRecipeResponse(recipe)
+	return &resp, nil
 }

@@ -21,7 +21,6 @@ func LoadConfig() {
 		"DATABASE_PASSWORD",
 		"DATABASE_NAME",
 		"SERVER_PORT",
-		"JWT_SECRET_KEY",
 	}
 
 	for _, env := range requiredEnvs {
@@ -39,10 +38,10 @@ func LoadConfig() {
 			strings.TrimSpace(strings.Trim(viper.GetString("DATABASE_NAME"), "\"")),
 		),
 		ServerPort: viper.GetString("SERVER_PORT"),
-		JWTConfig: dto.JWTConfig{
-			SecretKey:        viper.GetString("JWT_SECRET_KEY"),
-			AccessExpiration: viper.GetDuration("JWT_ACCESS_EXPIRATION"),
-		},
+		//JWTConfig: dto.JWTConfig{
+		//	SecretKey:        viper.GetString("JWT_SECRET_KEY"),
+		//	AccessExpiration: viper.GetDuration("JWT_ACCESS_EXPIRATION"),
+		//},
 	}
 
 	log.Printf("DatabaseDSN: %s\n", Config.DatabaseDSN)

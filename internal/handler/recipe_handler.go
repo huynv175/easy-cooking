@@ -4,6 +4,7 @@ import (
 	"easy-cooking/internal/models/dto"
 	"github.com/gin-gonic/gin"
 	"net/http"
+	"strconv"
 )
 
 func (h *Handler) GetRecipes(c *gin.Context) {
@@ -16,7 +17,12 @@ func (h *Handler) GetRecipes(c *gin.Context) {
 }
 
 func (h *Handler) GetRecipe(c *gin.Context) {
-	recipes, err := h.recipeService.GetRecipes(c.Request.Context())
+	idStr := c.Param("id")
+	id, err := strconv.Atoi(idStr)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid recipe ID"})
+	}
+	recipes, err := h.recipeService.GetRecipeByID(c.Request.Context(), int64(id))
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to fetch recipes"})
 		return

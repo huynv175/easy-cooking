@@ -46,5 +46,5 @@ func connectDatabase() *database.Database {
 }
 
 func createHandler(dbConn *database.Database) *handler.Handler {
-	return handler.NewHandler(dbConn.GetDB(), config.Config.JWTConfig, 5*time.Second)
+	return handler.NewHandler(dbConn.GetDB(), 5*time.Second)
 }

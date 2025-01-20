@@ -3,10 +3,8 @@ package dto
 import "easy-cooking/internal/models/do"
 
 type IngredientResponse struct {
-	ID       uint64 `json:"id"`
-	Name     string `json:"name"`
-	Quantity string `json:"quantity"`
-	Unit     string `json:"unit"`
+	ID   uint64 `json:"id"`
+	Name string `json:"name"`
 }
 
 func ToIngredientResponse(ing do.Ingredient) IngredientResponse {

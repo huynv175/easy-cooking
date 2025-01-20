@@ -24,7 +24,7 @@ func NewRecipeRepository(db *gorm.DB) *recipeRepository {
 
 func (r *recipeRepository) GetRecipes(ctx context.Context, filter SearchCriteria) ([]*do.Recipe, int64, error) {
 	var recipes []*do.Recipe
-	query := r.db.WithContext(ctx)
+	query := r.db.WithContext(ctx).Model(&do.Recipe{})
 	query = query.Preload("Ingredients").
 		Preload("Instructions", func(db *gorm.DB) *gorm.DB {
 			return db.Order("step_number ASC")

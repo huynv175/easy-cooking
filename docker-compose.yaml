@@ -1,19 +1,19 @@
 version: '3.8'
 
 services:
-  mysql:
-    image: mysql:8.0
-    container_name: mysql_service
+  postgres:
+    image: postgres:latest
+    container_name: postgres_service
     restart: always
     environment:
-      MYSQL_ROOT_PASSWORD: secret
-      MYSQL_DATABASE: easy-cooking
-      MYSQL_USER: huynv
-      MYSQL_PASSWORD: secret
+      POSTGRES_PASSWORD: secret
+      POSTGRES_DB: easy-cooking
+      POSTGRES_USER: huynv
+
     ports:
-      - "3306:3306"
+      - "5432:5432"
     volumes:
-      - mysql_data:/var/lib/mysql
+      - postgres_data:/var/lib/postgresql/data
 
 volumes:
-  mysql_data:
+  postgres_data:

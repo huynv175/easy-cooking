@@ -8,7 +8,24 @@ import (
 )
 
 func (h *Handler) GetRecipes(c *gin.Context) {
-	recipes, err := h.recipeService.GetRecipes(c.Request.Context())
+	page := c.Query("page")
+	perPage := c.Query("per_page")
+	pageInt, err := strconv.Atoi(page)
+	if err != nil {
+		pageInt = 1
+	}
+	perPageInt, err := strconv.Atoi(perPage)
+	if err != nil {
+		perPageInt = 10
+	}
+
+	searchParams := dto.RecipeSearchRequest{
+		Page:      pageInt,
+		PageSize:  perPageInt,
+		SortBy:    c.Query("sort_by"),
+		SortOrder: c.Query("sort_order"),
+	}
+	recipes, err := h.recipeService.GetRecipes(c.Request.Context(), searchParams)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to fetch recipes"})
 		return

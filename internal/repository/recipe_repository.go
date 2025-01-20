@@ -11,7 +11,7 @@ type recipeRepository struct {
 }
 
 type RecipeRepository interface {
-	GetRecipes(ctx context.Context) ([]*do.Recipe, error)
+	GetRecipes(ctx context.Context, filter SearchCriteria) ([]*do.Recipe, int64, error)
 	SearchRecipes(ctx context.Context, criteria SearchCriteria) ([]*do.Recipe, int64, error)
 	GetRecipeByID(ctx context.Context, id int64) (do.Recipe, error)
 }
@@ -22,12 +22,33 @@ func NewRecipeRepository(db *gorm.DB) *recipeRepository {
 	return &recipeRepository{db: db}
 }
 
-func (r *recipeRepository) GetRecipes(ctx context.Context) ([]*do.Recipe, error) {
+func (r *recipeRepository) GetRecipes(ctx context.Context, filter SearchCriteria) ([]*do.Recipe, int64, error) {
 	var recipes []*do.Recipe
-	if err := r.db.WithContext(ctx).Find(&recipes).Error; err != nil {
-		return nil, err
+	query := r.db.WithContext(ctx)
+	query = query.Preload("Ingredients").
+		Preload("Instructions", func(db *gorm.DB) *gorm.DB {
+			return db.Order("step_number ASC")
+		})
+	if filter.SortBy != "" {
+		orderClause := filter.SortBy
+		if filter.SortOrder != "" {
+			orderClause += " " + filter.SortOrder
+		}
+		query = query.Order(orderClause)
 	}
-	return recipes, nil
+
+	var total int64
+	countQuery := query
+	if err := countQuery.Count(&total).Error; err != nil {
+		return nil, 0, err
+	}
+
+	offset := (filter.Page - 1) * filter.PageSize
+	query = query.Offset(offset).Limit(filter.PageSize)
+	if err := query.Find(&recipes).Error; err != nil {
+		return nil, 0, err
+	}
+	return recipes, total, nil
 }
 
 type SearchCriteria struct {

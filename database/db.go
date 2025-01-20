@@ -1,7 +1,7 @@
 package database
 
 import (
-	"gorm.io/driver/mysql"
+	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"
 )
@@ -11,7 +11,7 @@ type Database struct {
 }
 
 func NewDatabase(dsn string) (*Database, error) {
-	db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{
+	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{
 		Logger: logger.Default.LogMode(logger.Error),
 	})
 	if err != nil {
@@ -21,11 +21,11 @@ func NewDatabase(dsn string) (*Database, error) {
 }
 
 func (d *Database) Close() error {
-	mysqldb, err := d.db.DB()
+	db, err := d.db.DB()
 	if err != nil {
 		return err
 	}
-	if err := mysqldb.Close(); err != nil {
+	if err := db.Close(); err != nil {
 		return err
 	}
 	return nil

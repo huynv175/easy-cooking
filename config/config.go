@@ -23,12 +23,13 @@ func LoadConfig() {
 
 	// Gán giá trị vào cấu hình ứng dụng
 	Config = dto.AppConfig{
-		DatabaseDSN: fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?charset=utf8mb4&parseTime=True&loc=UTC",
-			viper.GetString("database.user"),
-			viper.GetString("database.password"),
+		DatabaseDSN: fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s sslmode=disable",
 			viper.GetString("database.host"),
 			viper.GetString("database.port"),
-			viper.GetString("database.name")),
+			viper.GetString("database.user"),
+			viper.GetString("database.password"),
+			viper.GetString("database.name"),
+		),
 		ServerPort: viper.GetString("server.port"),
 		JWTConfig: dto.JWTConfig{
 			SecretKey:        viper.GetString("jwt.secretKey"),

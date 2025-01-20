@@ -17,7 +17,7 @@ var r *gin.Engine
 func InitRouter(handler *handler.Handler) {
 	r = gin.Default()
 	//r.Use(middleware.CORSMiddleware())
-	r.Static("/uploads/images", "./uploads/images")
+	//r.Static("/uploads/images", "./uploads/images")
 
 	//recipe
 	RecipeRouter(r, handler)

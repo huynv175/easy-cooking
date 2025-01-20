@@ -6,8 +6,10 @@ import (
 )
 
 func RecipeRouter(r *gin.Engine, handler *handler.Handler) {
-	productGroup := r.Group("v0/recipes")
+	recipeGroup := r.Group("v0/recipes")
 	{
-		productGroup.GET("", handler.GetRecipes)
+		recipeGroup.GET("", handler.GetRecipes)
+		recipeGroup.GET("/:id", handler.GetRecipe)
+		recipeGroup.POST("/search", handler.SearchRecipes)
 	}
 }
